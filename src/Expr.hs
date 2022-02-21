@@ -21,11 +21,11 @@ myShows s suff = s ++ suff
 myShowsExpr :: Int -> Expr -> ShowS
 myShowsExpr _ (Var s) = myShows s
 
-myShowsExpr _ (Not a) = myShows "¬ " . myShowsExpr opPriority a
+myShowsExpr _ (Not a) = myShows "!" . myShowsExpr opPriority a
     where opPriority = 4
 
-myShowsExpr n (a :* b) = myShowsExprHelper 3 " ∧ " n a b
-myShowsExpr n (a :+ b) = myShowsExprHelper 2 " ∨ " n a b
+myShowsExpr n (a :* b) = myShowsExprHelper 3 " * " n a b
+myShowsExpr n (a :+ b) = myShowsExprHelper 2 " + " n a b
 myShowsExpr n (a :-> b) = myShowsExprHelper 1 " -> " n a b
 myShowsExpr n (a :<-> b) = myShowsExprHelper 0 " <-> " n a b
 
@@ -44,7 +44,7 @@ data BinOp = Null | Eq | Impl | Or | And
     deriving (Eq, Show, Ord)
           
 getOp :: String -> (BinOp, String)
-getOp s = if (res == Null) then (res, s) else (res, whitespaceRm suff2)
+getOp s = if (res == Null) then (res, whitespaceRm s) else (res, whitespaceRm suff2)
     where (operation, suff2) = head $ lex s
           res = case operation of 
                      "<->" -> Eq
