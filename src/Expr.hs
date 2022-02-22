@@ -96,7 +96,7 @@ myReadExpr st ('(' : s) = myReadExpr st' suff''
           (op, suff'') = getOp suff'
           st' = applyOp st ex op
           
-myReadExpr st str@('!' : s) = case next of
+myReadExpr st str@('~' : s) = case next of
                                '(' : _ -> myReadExpr (applyOp st (constr ex1) op) suff'
                                _ -> myReadExpr (applyOp st ex2 op2) suff2'
     where (constr, next) = getNotConstr str
@@ -113,7 +113,7 @@ myReadExpr st s = myReadExpr (applyOp st ex op) suff''
           (op, suff'') = getOp suff' 
           
 getNotConstr :: String -> (Expr -> Expr, String)
-getNotConstr ('!' : s) = (Not . f, str)
+getNotConstr ('~' : s) = (Not . f, str)
     where (f, str) = getNotConstr $ whitespaceRm s
     
 getNotConstr s = (id, s)
