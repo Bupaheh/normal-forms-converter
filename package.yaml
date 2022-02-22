@@ -1,10 +1,8 @@
-name:                task01
+name:                normal-forms-converter
 version:             0.1.0.0
-github:              "Github username here/task01"
+github:              "Bupaheh/normal-forms-converter"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "Author email here"
-copyright:           "2019 Author name here"
+author:              "Bupaheh"
 
 extra-source-files:
 - README.md
@@ -16,7 +14,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/Github username here/task01#readme>
+description:         Please see the README on GitHub at <https://github.com/Bupaheh/normal-forms-converter>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -25,7 +23,7 @@ library:
   source-dirs: src
 
 executables:
-  task01-exe:
+  normal-forms-converter-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -33,10 +31,10 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - task01
+    - normal-forms-converter
 
 tests:
-  task01-test:
+  normal-forms-converter-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -44,4 +42,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - task01
+    - normal-forms-converter
