@@ -52,10 +52,10 @@ myShowsExprHelper opPriority s n a b | n <= opPriority = withoutBrackets
 whitespaceRm s = pref ++ suff
     where (pref, suff) = head $ lex s
           
-data Op = Null | Eq | Impl | Or | And
+data BinOp = Null | Eq | Impl | Or | And
     deriving (Eq, Show, Ord)
           
-getOp :: String -> (Op, String)
+getOp :: String -> (BinOp, String)
 getOp s = if (res operation == Null) then (res operation, whitespaceRm s) else (res operation, whitespaceRm suff2)
     where (operation, suff2) = head $ lex s
           res op | op == eqSymb     = Eq 
@@ -64,14 +64,14 @@ getOp s = if (res operation == Null) then (res operation, whitespaceRm s) else (
                  | op == andSymb    = And
                  | otherwise        = Null
   
-binOpToConstr :: Op -> Expr -> Expr -> Expr
+binOpToConstr :: BinOp -> Expr -> Expr -> Expr
 binOpToConstr op = case op of
                    Eq -> (:<->)
                    Impl -> (:->)
                    Or -> (:+)
                    And -> (:*)
   
-applyOp :: [(Expr, Op)] -> Expr -> Op -> [(Expr, Op)]
+applyOp :: [(Expr, BinOp)] -> Expr -> BinOp -> [(Expr, BinOp)]
 applyOp st@((ex1, op) : tl) ex2 context | context <= op = applyOp tl (binOpToConstr op ex1 ex2) context
                                         | otherwise = (ex2, context) : st
                                         
@@ -80,7 +80,7 @@ applyOp [] ex context = [(ex, context)]
 instance Read Expr where
   readsPrec _ = myReadExpr []          
           
-myReadExpr :: [(Expr, Op)] -> ReadS Expr
+myReadExpr :: [(Expr, BinOp)] -> ReadS Expr
 myReadExpr [(ex, Null)] s = [(ex, s)]
 
 myReadExpr st ('(' : s) = myReadExpr st' suff''
