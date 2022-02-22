@@ -5,31 +5,31 @@ import Expr(Expr(..))
 toBasis :: Expr -> Expr
 toBasis (Var a) = Var a
 toBasis (Not a) = Not $ toBasis a
-toBasis (a :* b) = toBasis a :* (toBasis b)
-toBasis (a :+ b) = (toBasis a) :+ (toBasis b)
-toBasis (a :-> b) = (Not $ toBasis a) :+ (toBasis b)
-toBasis (a :<-> b) = (Not a' :+ b') :* (Not b' :+ a')
+toBasis (a :& b) = toBasis a :& (toBasis b)
+toBasis (a :| b) = (toBasis a) :| (toBasis b)
+toBasis (a :=> b) = (Not $ toBasis a) :| (toBasis b)
+toBasis (a :<=> b) = (Not a' :| b') :& (Not b' :| a')
     where a' = toBasis a
           b' = toBasis b
 
 dml :: Expr -> Expr
 dml (Var a) = Var a
 dml (Not (Not a)) = dml a
-dml (Not (a :+ b)) = dml (Not a) :* dml (Not b)
-dml (Not (a :* b)) = dml (Not a) :+ dml (Not b)
+dml (Not (a :| b)) = dml (Not a) :& dml (Not b)
+dml (Not (a :& b)) = dml (Not a) :| dml (Not b)
 dml (Not a) = Not $ dml a
-dml (a :* b) = dml a :* dml b
-dml (a :+ b) = dml a :+ dml b
+dml (a :& b) = dml a :& dml b
+dml (a :| b) = dml a :| dml b
 
 distr :: Expr -> Expr
-distr (a :+ b) = distr a :+ distr b
-distr (a :* b) = case expr of
-                      d :* (e :+ f) -> distr (d :* e) :+ distr (d :* f)
-                      ((d :+ e) :* f) -> distr (d :* f) :+ distr (e :* f)
+distr (a :| b) = distr a :| distr b
+distr (a :& b) = case expr of
+                      d :& (e :| f) -> distr (d :& e) :| distr (d :& f)
+                      ((d :| e) :& f) -> distr (d :& f) :| distr (e :& f)
                       _ -> expr
     where a' = distr a
           b' = distr b
-          expr = a' :* b'
+          expr = a' :& b'
 distr a = a
 
 readExpr :: String -> Expr

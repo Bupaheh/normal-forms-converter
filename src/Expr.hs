@@ -8,17 +8,23 @@ implSymb = "=>"
 eqSymb = "<=>"
 notSymb = "~"
 
-notPriority = 4
-andPriority = 3
-orPriority = 2
-implPriority = 1
-eqPriority = 0
+notPr = 5
+andPr = 4
+orPr = 3
+implPrR = 2
+implPr = 1
+eqPr = 0
+
+infixl 7 :&
+infixl 6 :|
+infixl 5 :=>
+infixl 4 :<=>
 
 data Expr = Var Symb
-          | Expr :* Expr
-          | Expr :+ Expr
-          | Expr :-> Expr
-          | Expr :<-> Expr
+          | Expr :& Expr
+          | Expr :| Expr
+          | Expr :=> Expr
+          | Expr :<=> Expr
           | Not Expr
               deriving Eq
               
@@ -33,18 +39,19 @@ myShows s suff = s ++ suff
 myShowsExpr :: Int -> Expr -> ShowS
 myShowsExpr _ (Var s) = myShows s
 
-myShowsExpr _ (Not a) = myShows notSymb . myShowsExpr notPriority a
+myShowsExpr _ (Not a) = myShows notSymb . myShowsExpr notPr a
 
-myShowsExpr n (a :* b) = myShowsExprHelper andPriority andSymb n a b
-myShowsExpr n (a :+ b) = myShowsExprHelper orPriority orSymb n a b
-myShowsExpr n (a :-> b) = myShowsExprHelper implPriority implSymb n a b
-myShowsExpr n (a :<-> b) = myShowsExprHelper eqPriority eqSymb n a b
+myShowsExpr context (a :& b) = myShowsExprHelper andPr andSymb context (andPr, andPr) a b
+myShowsExpr context (a :| b) = myShowsExprHelper orPr orSymb context (orPr, orPr) a b
+myShowsExpr context (a :=> b@(c :=> d)) = myShowsExprHelper implPr implSymb context (implPr, implPrR) a b
+myShowsExpr context (a :=> b) = myShowsExprHelper implPr implSymb context (implPr, implPr) a b
+myShowsExpr context (a :<=> b) = myShowsExprHelper eqPr eqSymb context (eqPr, eqPr) a b
 
-myShowsExprHelper :: Int -> String -> Int -> Expr -> Expr -> ShowS
-myShowsExprHelper opPriority s n a b | n <= opPriority = withoutBrackets
-                                     | otherwise = myShows "(" . withoutBrackets . myShows ")"
-    where str = " " ++ s ++ " " 
-          withoutBrackets = myShowsExpr opPriority a . myShows str . myShowsExpr opPriority b
+myShowsExprHelper :: Int -> String -> Int -> (Int, Int) -> Expr -> Expr -> ShowS
+myShowsExprHelper opPr opSymb context (contextL, contextR) a b | context <= opPr    = withoutBrackets 
+                                                               | otherwise          = myShows "(" . withoutBrackets . myShows ")"
+    where withoutBrackets = myShowsExpr contextL a . myShows opSymb' . myShowsExpr contextR b
+          opSymb' = " " ++ opSymb ++ " " 
 
     
 -- instance Read
@@ -56,8 +63,9 @@ data BinOp = Null | Eq | Impl | Or | And
     deriving (Eq, Show, Ord)
           
 getOp :: String -> (BinOp, String)
-getOp s = if (res operation == Null) then (res operation, whitespaceRm s) else (res operation, whitespaceRm suff2)
+getOp s = if (res' == Null) then (res', whitespaceRm s) else (res', whitespaceRm suff2)
     where (operation, suff2) = head $ lex s
+          res' = res operation
           res op | op == eqSymb     = Eq 
                  | op == implSymb   = Impl
                  | op == orSymb     = Or
@@ -66,16 +74,15 @@ getOp s = if (res operation == Null) then (res operation, whitespaceRm s) else (
   
 binOpToConstr :: BinOp -> Expr -> Expr -> Expr
 binOpToConstr op = case op of
-                   Eq -> (:<->)
-                   Impl -> (:->)
-                   Or -> (:+)
-                   And -> (:*)
+                   Eq -> (:<=>)
+                   Impl -> (:=>)
+                   Or -> (:|)
+                   And -> (:&)
   
 applyOp :: [(Expr, BinOp)] -> Expr -> BinOp -> [(Expr, BinOp)]
+applyOp [] ex context = [(ex, context)]
 applyOp st@((ex1, op) : tl) ex2 context | context <= op = applyOp tl (binOpToConstr op ex1 ex2) context
                                         | otherwise = (ex2, context) : st
-                                        
-applyOp [] ex context = [(ex, context)]
     
 instance Read Expr where
   readsPrec _ = myReadExpr []          
