@@ -56,15 +56,22 @@ myShowsExprHelper opPr opSymb context (contextL, contextR) a b | context <= opPr
     
 -- instance Read
 
-lex' :: String -> (String, String)
-lex' str = (f, whitespaceRm s)
-    where (f, s) = head $ lex str
-
-whitespaceRm s = pref ++ suff
-    where (pref, suff) = head $ lex s
-          
 data BinOp = Null | Eq | Impl | Or | And
     deriving (Eq, Show, Ord)
+    
+whitespaceRm s = pref ++ suff
+    where (pref, suff) = head $ lex s
+
+-- to fix "=>~~a" case
+lex' :: String -> (String, String)
+lex' str = (takeWhile pred f, dropWhile pred f ++ s)
+    where (f, s) = lexhelper str
+          pred = (/= (head notSymb))
+          
+lexhelper :: String -> (String, String)
+lexhelper str = (f, whitespaceRm s)
+    where (f, s) = head $ lex str        
+          
           
 getOp :: String -> (BinOp, String)
 getOp s = if (res' == Null) then (res', whitespaceRm s) else (res', suff)
