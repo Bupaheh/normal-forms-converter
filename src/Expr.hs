@@ -56,6 +56,10 @@ myShowsExprHelper opPr opSymb context (contextL, contextR) a b | context <= opPr
     
 -- instance Read
 
+lex' :: String -> (String, String)
+lex' str = (f, whitespaceRm s)
+    where (f, s) = head $ lex str
+
 whitespaceRm s = pref ++ suff
     where (pref, suff) = head $ lex s
           
@@ -63,8 +67,8 @@ data BinOp = Null | Eq | Impl | Or | And
     deriving (Eq, Show, Ord)
           
 getOp :: String -> (BinOp, String)
-getOp s = if (res' == Null) then (res', whitespaceRm s) else (res', whitespaceRm suff2)
-    where (operation, suff2) = head $ lex s
+getOp s = if (res' == Null) then (res', s) else (res', suff)
+    where (operation, suff) = lex' s
           res' = res operation
           res op | op == eqSymb     = Eq 
                  | op == implSymb   = Impl
@@ -90,10 +94,9 @@ instance Read Expr where
 myReadExpr :: [(Expr, BinOp)] -> ReadS Expr
 myReadExpr [(ex, Null)] s = [(ex, s)]
 
-myReadExpr st ('(' : s) = myReadExpr st' suff''
+myReadExpr st ('(' : s) = myReadExpr st' suff'
     where (ex, ')' : suff) = head $ myReadExpr [] s
-          suff' = whitespaceRm suff
-          (op, suff'') = getOp suff'
+          (op, suff') = getOp suff
           st' = applyOp st ex op
           
 myReadExpr st str@('~' : s) = case next of
@@ -102,15 +105,14 @@ myReadExpr st str@('~' : s) = case next of
     where (constr, next) = getNotConstr str
           (ex1, ')' : suff) = head $ myReadExpr [] $ tail next
           (op, suff') = getOp suff
-          (name, suff2) = head $ lex next
+          (name, suff2) = lex' next
           ex2 = constr $ Var name
           (op2, suff2') = getOp suff2
           
-myReadExpr st s = myReadExpr (applyOp st ex op) suff''
-    where (name, suff) = head $ lex s
-          suff' = whitespaceRm suff
+myReadExpr st s = myReadExpr (applyOp st ex op) suff'
+    where (name, suff) = lex' s
           ex = Var name
-          (op, suff'') = getOp suff' 
+          (op, suff') = getOp suff 
           
 getNotConstr :: String -> (Expr -> Expr, String)
 getNotConstr ('~' : s) = (Not . f, str)
