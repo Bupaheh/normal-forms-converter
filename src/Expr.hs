@@ -67,7 +67,7 @@ data BinOp = Null | Eq | Impl | Or | And
     deriving (Eq, Show, Ord)
           
 getOp :: String -> (BinOp, String)
-getOp s = if (res' == Null) then (res', s) else (res', suff)
+getOp s = if (res' == Null) then (res', whitespaceRm s) else (res', suff)
     where (operation, suff) = lex' s
           res' = res operation
           res op | op == eqSymb     = Eq 
