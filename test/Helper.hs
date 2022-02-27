@@ -1,4 +1,4 @@
-module Helper(isEq, isNNF) where
+module Helper(isEq, isNNF, isDNF) where
 
 import Data.List
 import Test.QuickCheck
@@ -53,3 +53,13 @@ isNNF (a :| b) = isNNF a && isNNF b
 isNNF (Var a) = True
 isNNF (Not (Var a)) = True
 isNNF a = False
+
+isDNF :: Expr -> Bool
+isDNF (a :& (b :| c)) = False
+isDNF ((a :| b) :& c) = False
+isDNF (a :& b) = isDNF a && isDNF b
+isDNF (a :| b) = isDNF a && isDNF b
+isDNF (Var a) = True
+isDNF (Not (Var a)) = True
+isDNF a = False
+

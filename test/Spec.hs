@@ -7,7 +7,7 @@ import Data.List
 import Test.QuickCheck
 
 varSize :: Int
-varSize = 10
+varSize = 6
               
 instance Arbitrary Expr where
   arbitrary = sized arbitrary' 
@@ -29,6 +29,11 @@ prop_test_NNF :: Expr -> Bool
 prop_test_NNF expr = isNNF nnf && isEq nnf expr
   where nnf = toNNF expr
 
+prop_test_DNF :: Expr -> Bool
+prop_test_DNF expr = isDNF dnf && isEq dnf expr
+  where dnf = toDNF expr
+  
 return []
 main :: IO Bool
-main = $quickCheckAll
+main = $forAllProperties $
+  quickCheckWithResult (stdArgs {maxSuccess = 100, maxSize = 20})
