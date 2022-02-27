@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 import Lib
 import Expr
 import Helper
@@ -23,5 +25,10 @@ instance Arbitrary Expr where
 prop_read_show :: Expr -> Bool
 prop_read_show expr = isEq (read (show expr)) expr
 
-main :: IO ()
-main = quickCheck prop_read_show
+prop_test_NNF :: Expr -> Bool
+prop_test_NNF expr = isNNF nnf && isEq nnf expr
+  where nnf = toNNF expr
+
+return []
+main :: IO Bool
+main = $quickCheckAll

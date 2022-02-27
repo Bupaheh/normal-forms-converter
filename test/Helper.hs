@@ -1,4 +1,4 @@
-module Helper(isEq) where
+module Helper(isEq, isNNF) where
 
 import Data.List
 import Test.QuickCheck
@@ -45,3 +45,11 @@ isEq a b = (vars1 == vars2) && all (\l -> isEq' vars1 l a b) int
   where vars1 = getVars a
         vars2 = getVars b
         int = allInt $ length vars1
+        
+        
+isNNF :: Expr -> Bool
+isNNF (a :& b) = isNNF a && isNNF b
+isNNF (a :| b) = isNNF a && isNNF b
+isNNF (Var a) = True
+isNNF (Not (Var a)) = True
+isNNF a = False
