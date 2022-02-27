@@ -47,4 +47,3 @@ toDNF = distr . toNNF
 
 toCNF :: Expr -> Expr
 toCNF = dml . Not . toDNF . Not
-

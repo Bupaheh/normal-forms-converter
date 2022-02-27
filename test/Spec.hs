@@ -32,8 +32,12 @@ prop_test_NNF expr = isNNF nnf && isEq nnf expr
 prop_test_DNF :: Expr -> Bool
 prop_test_DNF expr = isDNF dnf && isEq dnf expr
   where dnf = toDNF expr
+
+prop_test_CNF :: Expr -> Bool
+prop_test_CNF expr = isCNF cnf && isEq cnf expr
+  where cnf = toCNF expr
   
 return []
 main :: IO Bool
 main = $forAllProperties $
-  quickCheckWithResult (stdArgs {maxSuccess = 100, maxSize = 20})
+  quickCheckWithResult (stdArgs {maxSuccess = 100, maxSize = 18})
