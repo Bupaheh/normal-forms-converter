@@ -13,6 +13,8 @@ toBasis (a :<=> b) = (Not a' :| b') :& (Not b' :| a')
           b' = toBasis b
 
 dml :: Expr -> Expr
+dml (a :=> b) = undefined
+dml (a :<=> b) = undefined
 dml (Var a) = Var a
 dml (Not (Not a)) = dml a
 dml (Not (a :| b)) = dml (Not a) :& dml (Not b)
@@ -22,6 +24,8 @@ dml (a :& b) = dml a :& dml b
 dml (a :| b) = dml a :| dml b
 
 distr :: Expr -> Expr
+distr (a :=> b) = undefined
+distr (a :<=> b) = undefined
 distr (a :| b) = distr a :| distr b
 distr (a :& b) = case expr of
                       d :& (e :| f) -> distr (d :& e) :| distr (d :& f)
