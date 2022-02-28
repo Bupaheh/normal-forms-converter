@@ -1,4 +1,5 @@
 import Expr
+import Lib
 import Shared
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -6,7 +7,7 @@ import Test.Tasty.HUnit
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [readShowTests] 
+tests = testGroup "Tests" [readShowTests, toNNFTests] 
 
 showRead :: String -> String
 showRead s = show (read s :: Expr)
@@ -24,4 +25,21 @@ readShowTests = testGroup "Read and show tests"
       "a => b => c" @=? showRead "(a => b) => c"
   , testCase "Implication right associativity test" $
       "a => (b => c)" @=? showRead "a => (b => c)"
+  ]
+  
+var = read "a" :: Expr
+expr = read "a <=> ~(a & b => c | d)" :: Expr
+bigExpr = read "(~(a2 => a2 => a4) | (a6 | a5 => (a6 <=> a6)) => (~((a4 <=> a3) | a4) => ~(a3 => (a5 => a3)))) | ((a1 <=> a5) & a1 & a1 <=> ~a2 & a3 & a4 & ((a5 => a5) | a2 & a1))" :: Expr
+
+testNNF :: Expr -> Bool
+testNNF expr = isNNF nnf && isEq nnf expr
+  where nnf = toNNF expr
+
+toNNFTests = testGroup "toNNF tests"
+  [ testCase "Variable test" $ 
+      assertBool "" $ testNNF var
+  , testCase "Basic expression test" $
+      assertBool "" $ testNNF expr
+  , testCase "Big expression test" $
+      assertBool "" $ testNNF bigExpr
   ]
