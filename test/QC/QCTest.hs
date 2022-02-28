@@ -41,4 +41,4 @@ prop_test_CNF expr = isCNF cnf && isEq cnf expr
 return []
 main :: IO Bool
 main = $forAllProperties $
-  quickCheckWithResult (stdArgs {maxSuccess = 100, maxSize = 18})
+  quickCheckWithResult (stdArgs {maxSuccess = 100, maxSize = 17})

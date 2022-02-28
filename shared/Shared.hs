@@ -1,7 +1,6 @@
 module Shared(isEq, isNNF, isDNF, isCNF) where
 
 import Data.List
-import Test.QuickCheck
 import Expr
 
 unique :: Eq a => [a] -> [a]
@@ -45,7 +44,6 @@ isEq a b = (vars1 == vars2) && all (\l -> isEq' vars1 l a b) int
   where vars1 = getVars a
         vars2 = getVars b
         int = allInt $ length vars1
-        
         
 isNNF :: Expr -> Bool
 isNNF (a :& b) = isNNF a && isNNF b

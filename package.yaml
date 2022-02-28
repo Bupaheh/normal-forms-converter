@@ -33,10 +33,12 @@ executables:
     dependencies:
     - normal-forms-converter
 
-tests:
-  normal-forms-converter-test:
-    main:                QCTests.hs
-    source-dirs:         test
+tests:  
+  QuickCheck-test:
+    main:                QCTest.hs
+    source-dirs:         
+    - test/QC
+    - test/shared
     ghc-options:
     - -threaded
     - -rtsopts
@@ -44,3 +46,17 @@ tests:
     dependencies:
     - normal-forms-converter
     - QuickCheck
+    
+  Unit-test:
+    main:                UnitTest.hs
+    source-dirs:         
+    - test/Unit
+    - test/shared
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - normal-forms-converter
+    - tasty
+    - tasty-hunit
