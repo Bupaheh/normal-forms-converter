@@ -55,7 +55,6 @@ myShowsExprHelper opPr opSymb context (contextL, contextR) a b | context <= opPr
 
     
 -- instance Read
-
 data BinOp = Null | Eq | Impl | Or | And
     deriving (Eq, Show, Ord)
     
@@ -89,6 +88,7 @@ binOpToConstr op = case op of
                    Impl -> (:=>)
                    Or -> (:|)
                    And -> (:&)
+                   Null -> undefined
   
 applyOp :: [(Expr, BinOp)] -> Expr -> BinOp -> [(Expr, BinOp)]
 applyOp [] ex context = [(ex, context)]

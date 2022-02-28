@@ -2,7 +2,7 @@
 
 import Lib
 import Expr
-import Helper
+import Shared
 import Data.List
 import Test.QuickCheck
 
@@ -23,7 +23,8 @@ instance Arbitrary Expr where
             ]
         
 prop_read_show :: Expr -> Bool
-prop_read_show expr = isEq (read (show expr)) expr
+prop_read_show expr = show (read e :: Expr) == e
+  where e = show expr
 
 prop_test_NNF :: Expr -> Bool
 prop_test_NNF expr = isNNF nnf && isEq nnf expr

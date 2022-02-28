@@ -47,9 +47,9 @@ executable normal-forms-converter-exe
 
 test-suite normal-forms-converter-test
   type: exitcode-stdio-1.0
-  main-is: Spec.hs
+  main-is: QCTests.hs
   other-modules:
-      Helper
+      Shared
       Paths_normal_forms_converter
   hs-source-dirs:
       test

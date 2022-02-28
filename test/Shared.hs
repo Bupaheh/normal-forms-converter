@@ -1,4 +1,4 @@
-module Helper(isEq, isNNF, isDNF, isCNF) where
+module Shared(isEq, isNNF, isDNF, isCNF) where
 
 import Data.List
 import Test.QuickCheck

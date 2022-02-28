@@ -5,13 +5,14 @@ import Expr(Expr(..))
 toBasis :: Expr -> Expr
 toBasis (Var a) = Var a
 toBasis (Not a) = Not $ toBasis a
-toBasis (a :& b) = toBasis a :& (toBasis b)
-toBasis (a :| b) = (toBasis a) :| (toBasis b)
-toBasis (a :=> b) = (Not $ toBasis a) :| (toBasis b)
+toBasis (a :& b) = toBasis a :& toBasis b
+toBasis (a :| b) = toBasis a :| toBasis b
+toBasis (a :=> b) = (Not $ toBasis a) :| toBasis b
 toBasis (a :<=> b) = (Not a' :| b') :& (Not b' :| a')
     where a' = toBasis a
           b' = toBasis b
 
+-- applies De Morgan's Laws and removes double Not
 dml :: Expr -> Expr
 dml (a :=> b) = undefined
 dml (a :<=> b) = undefined
@@ -29,7 +30,7 @@ distr (a :<=> b) = undefined
 distr (a :| b) = distr a :| distr b
 distr (a :& b) = case expr of
                       d :& (e :| f) -> distr (d :& e) :| distr (d :& f)
-                      ((d :| e) :& f) -> distr (d :& f) :| distr (e :& f)
+                      (d :| e) :& f -> distr (d :& f) :| distr (e :& f)
                       _ -> expr
     where a' = distr a
           b' = distr b
