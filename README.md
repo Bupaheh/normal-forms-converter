@@ -10,3 +10,9 @@ NNF: (~a | a & b & ~c & ~d) & (~a | ~b | c | d | a)
 DNF: ~a & ~a | a & b & ~c & ~d & ~a | ~a & ~b | a & b & ~c & ~d & ~b | ~a & c | a & b & ~c & ~d & c | ~a & d | a & b & ~c & ~d & d | ~a & a | a & b & ~c & ~d & a
 CNF: (~a | a) & (~a | b) & (~a | ~c) & (~a | ~d) & (~a | ~b | c | d | a)
 ```
+
+## Tests
+To run tests execute:
+```bash
+$ stack test
+```
