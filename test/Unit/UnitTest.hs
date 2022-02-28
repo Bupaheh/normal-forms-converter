@@ -7,7 +7,7 @@ import Test.Tasty.HUnit
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [readShowTests, toNNFTests, toDNFTests] 
+tests = testGroup "Tests" [readShowTests, toNNFTests, toDNFTests, toCNFTests] 
 
 showRead :: String -> String
 showRead s = show (read s :: Expr)
@@ -55,4 +55,17 @@ toDNFTests = testGroup "toDNF tests"
       assertBool "" $ testDNF expr
   , testCase "Big expression test" $
       assertBool "" $ testDNF bigExpr
+  ]
+  
+testCNF :: Expr -> Bool
+testCNF expr = isCNF cnf && isEq cnf expr
+  where cnf = toCNF expr
+
+toCNFTests = testGroup "toCNF tests"
+  [ testCase "Variable test" $ 
+      assertBool "" $ testCNF var
+  , testCase "Basic expression test" $
+      assertBool "" $ testCNF expr
+  , testCase "Big expression test" $
+      assertBool "" $ testCNF bigExpr
   ]
